@@ -1,17 +1,72 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import styled from "styled-components";
 import { motion } from "framer-motion";
+import { capybaraIdle } from "../assets";
 
 /* 🩷 Trang Mini Game Unlock */
-export default function MiniGameUnlock({ onNext }) {
+export default function MiniGameUnlock({ onNext, showCapi: showCapiProp }) {
   const [gameResults, setGameResults] = useState([false, false, false, false]);
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [hearts, setHearts] = useState([]);
+  const [showCapi, setShowCapi] = useState(false);
+  const [titleVisible, setTitleVisible] = useState(false);
+  const [displayTitle, setDisplayTitle] = useState("");
+  const fullTitle = "Giải mã bí mật của Capybara";
 
   const correctCode = "1608";
 
+  /* 💖 Tạo trái tim bay */
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const newHeart = {
+        id: Date.now() + Math.random(),
+        left: Math.random() * 100,
+        delay: Math.random() * 1,
+        duration: 5 + Math.random() * 3,
+        size: 12 + Math.random() * 15,
+      };
+      setHearts((prev) => [...prev, newHeart]);
+
+      setTimeout(() => {
+        setHearts((prev) => prev.filter((h) => h.id !== newHeart.id));
+      }, (newHeart.duration + newHeart.delay) * 1000);
+    }, 600);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    let index = 0;
+
+    const timer = setTimeout(() => setTitleVisible(true), 300);
+
+    const typeTimer = setTimeout(() => {
+      const interval = setInterval(() => {
+        if (index < fullTitle.length) {
+          setDisplayTitle(fullTitle.slice(0, index + 1));
+          index++;
+        } else {
+          clearInterval(interval);
+        }
+      }, 55);
+
+      return () => clearInterval(interval);
+    }, 500);
+
+    return () => {
+      clearTimeout(timer);
+      clearTimeout(typeTimer);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (showCapiProp) {
+      setTimeout(() => setShowCapi(true), 200);
+    }
+  }, [showCapiProp]);
+
   const handleMiniGameClick = (index) => {
-    // ⚙️ Tạm thời cho “thắng game” luôn để demo
     const newResults = [...gameResults];
     newResults[index] = true;
     setGameResults(newResults);
@@ -26,144 +81,470 @@ export default function MiniGameUnlock({ onNext }) {
     }
   };
 
+  const allUnlocked = gameResults.every((r) => r);
+
   return (
     <Screen>
-      <Title>Giải mã bí mật của Capybara 💌</Title>
-
-      <GameGrid>
-        {gameResults.map((won, i) => (
-          <CardButton
-            key={i}
-            onClick={() => handleMiniGameClick(i)}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            {won ? (
-              <GameNumber>{["1", "6", "0", "8"][i]}</GameNumber>
-            ) : (
-              <QuestionMark>?</QuestionMark>
-            )}
-          </CardButton>
-        ))}
-      </GameGrid>
-
-      <PasswordSection>
-        <PasswordInput
-          type="text"
-          maxLength="4"
-          placeholder="Nhập mật khẩu..."
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
-        <ContinueButton
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          onClick={handleContinue}
+      {showCapi && (
+        <CapiPeek
+          initial={{ y: "105%", opacity: 0, scale: 1.1 }}
+          animate={{ y: "50%", opacity: 1, scale: 1.25 }}
+          transition={{
+            duration: 1.4,
+            type: "spring",
+            stiffness: 120
+          }}
         >
-          Tiếp tục 💖
-        </ContinueButton>
-        {error && <ErrorText>{error}</ErrorText>}
-      </PasswordSection>
+          <img src={capybaraIdle} alt="capi" />
+        </CapiPeek>
+      )}
+      {/* 💖 Trái tim bay nền */}
+      {hearts.map((heart) => (
+        <FloatingHeart
+          key={heart.id}
+          initial={{
+            y: "110vh",
+            x: `${heart.left}vw`,
+            opacity: 0,
+            scale: 0,
+          }}
+          animate={{
+            y: "-10vh",
+            opacity: [0, 0.6, 0.6, 0.4, 0],
+            scale: [0, 1, 1, 1.1, 0.7],
+            rotate: [0, 10, -10, 5, -5],
+          }}
+          transition={{
+            duration: heart.duration,
+            delay: heart.delay,
+            ease: "easeOut"
+          }}
+          style={{
+            fontSize: `${heart.size}px`
+          }}
+        >
+          💕
+        </FloatingHeart>
+      ))}
+
+      <Container
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8 }}
+      >
+        <Title
+          initial={{ opacity: 0, scale: 0.9, y: -10 }}
+          animate={{
+            opacity: titleVisible ? 1 : 0,
+            scale: titleVisible ? 1 : 0.9,
+            y: titleVisible ? 0 : -10,
+          }}
+          transition={{ duration: 0.6, type: "spring", stiffness: 150 }}
+        >
+          🔐 {displayTitle}
+          {displayTitle.length < fullTitle.length && <Cursor>|</Cursor>}
+        </Title>
+
+        <Subtitle>Nhấn vào các ô để mở khóa!</Subtitle>
+
+        <GameGrid>
+          {gameResults.map((won, i) => (
+            <CardButton
+              key={i}
+              onClick={() => handleMiniGameClick(i)}
+              whileHover={{ scale: 1.08, rotate: 5 }}
+              whileTap={{ scale: 0.92 }}
+              $unlocked={won}
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: i * 0.15, duration: 0.5 }}
+            >
+              <CardContent>
+                {won ? (
+                  <GameNumber
+                    initial={{ scale: 0, rotate: -180 }}
+                    animate={{ scale: 1, rotate: 0 }}
+                    transition={{ type: "spring", stiffness: 200 }}
+                  >
+                    {["1", "6", "0", "8"][i]}
+                  </GameNumber>
+                ) : (
+                  <QuestionMark
+                    animate={{
+                      rotate: [0, -10, 10, -10, 0],
+                      scale: [1, 1.1, 1]
+                    }}
+                    transition={{ duration: 2, repeat: Infinity }}
+                  >
+                    ?
+                  </QuestionMark>
+                )}
+                {won && <Sparkle>✨</Sparkle>}
+              </CardContent>
+            </CardButton>
+          ))}
+        </GameGrid>
+
+        <PasswordSection
+          initial={{ opacity: 0, y: 20 }}
+          animate={{
+            opacity: allUnlocked ? 1 : 0.4,
+            y: allUnlocked ? 0 : 20
+          }}
+          transition={{ duration: 0.5 }}
+        >
+          <PasswordLabel>Nhập mật khẩu 4 chữ số:</PasswordLabel>
+          <PasswordInput
+            type="text"
+            maxLength="4"
+            placeholder="••••"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            disabled={!allUnlocked}
+            $error={!!error}
+          />
+          <ContinueButton
+            whileHover={allUnlocked ? { scale: 1.08 } : {}}
+            whileTap={allUnlocked ? { scale: 0.95 } : {}}
+            onClick={handleContinue}
+            disabled={!allUnlocked || password.length !== 4}
+            $disabled={!allUnlocked || password.length !== 4}
+          >
+            <ButtonShine />
+            <span>Tiếp tục 💖</span>
+          </ContinueButton>
+          {error && (
+            <ErrorText
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0 }}
+            >
+              {error}
+            </ErrorText>
+          )}
+        </PasswordSection>
+      </Container>
     </Screen>
   );
 }
 
 /* 🎨 Styled Components */
 const Screen = styled.div`
+  position: relative;
   height: 100vh;
   width: 100vw;
-  background: linear-gradient(180deg, #ffb6c1 0%, #ff8fa3 100%);
+  background: linear-gradient(135deg, #ff9eb5 0%, #ffb6c1 50%, #ffc0cb 100%);
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
   font-family: "Dancing Script", cursive;
   overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: 
+      radial-gradient(circle at 20% 30%, rgba(255, 182, 193, 0.3) 0%, transparent 50%),
+      radial-gradient(circle at 80% 70%, rgba(255, 192, 203, 0.3) 0%, transparent 50%);
+    pointer-events: none;
+  }
 `;
 
-const Title = styled.h1`
-  color: white;
-  font-size: 36px;
-  font-weight: 700;
-  margin-bottom: 40px;
-  text-shadow: 0 0 12px rgba(255, 200, 220, 0.9);
+const CapiPeek = styled(motion.div)`
+  position: absolute;
+  bottom: 140px;
+  left: 0;
+  width: clamp(140px, 22vw, 230px);
+  height: auto;
+  z-index: 15;
+  pointer-events: none;
+
+  img {
+    width: 100%;
+    height: auto;
+    transform: translate(-25px, 15px) scale(1.25);
+    filter: drop-shadow(0 6px 12px rgba(0,0,0,0.35));
+  }
+
+  @media (max-width: 450px) {
+    width: 150px;
+    img {
+      transform: translate(-18px, 10px) scale(1.15);
+    }
+  }
 `;
 
-const GameGrid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(2, 120px);
-  grid-gap: 30px;
-  margin-bottom: 60px;
+const FloatingHeart = styled(motion.div)`
+  position: absolute;
+  pointer-events: none;
+  filter: drop-shadow(0 0 3px rgba(255, 105, 180, 0.4));
+  z-index: 1;
 `;
 
-const CardButton = styled(motion.div)`
-  width: 120px;
-  height: 100px;
-  border-radius: 16px;
-  background: rgba(255, 255, 255, 0.25);
-  box-shadow: 0 4px 10px rgba(255, 100, 150, 0.4);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  cursor: pointer;
-  backdrop-filter: blur(6px);
-  color: white;
-  font-size: 36px;
-  font-weight: 600;
-`;
-
-const GameNumber = styled.span`
-  font-size: 48px;
-  color: #fff;
-  text-shadow: 0 0 10px rgba(255, 180, 220, 0.9);
-`;
-
-const QuestionMark = styled.span`
-  font-size: 40px;
-  opacity: 0.6;
-`;
-
-const PasswordSection = styled.div`
+const Container = styled(motion.div)`
+  position: relative;
+  z-index: 10;
   display: flex;
   flex-direction: column;
   align-items: center;
 `;
 
-const PasswordInput = styled.input`
-  width: 220px;
-  height: 45px;
-  border-radius: 10px;
-  border: none;
+const Title = styled(motion.h1)`
+  color: white;
+  font-size: 40px;
+  font-weight: 700;
+  margin-bottom: 20px;
   text-align: center;
-  font-size: 22px;
-  margin-bottom: 16px;
-  outline: none;
-  background: rgba(255, 255, 255, 0.3);
-  color: #fff;
+  padding: 0 20px;
+  
+  @media (max-width: 500px) {
+    font-size: 32px;
+    margin-bottom: 18px;
+  }
+`;
+
+const Subtitle = styled.div`
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 20px;
+  margin-bottom: 40px;
+  text-shadow: 0 2px 8px rgba(255, 105, 180, 0.3);
+`;
+
+const GameGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(2, 140px);
+  gap: 20px;
+  margin-bottom: 50px;
+  
+  @media (max-width: 400px) {
+    grid-template-columns: repeat(2, 120px);
+    gap: 15px;
+  }
+`;
+
+const CardContent = styled.div`
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+
+const CardButton = styled(motion.div)`
+  width: 140px;
+  height: 120px;
+  border-radius: 20px;
+  background: ${props => props.$unlocked
+    ? 'linear-gradient(135deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 182, 193, 0.3) 100%)'
+    : 'rgba(255, 255, 255, 0.2)'
+  };
+  backdrop-filter: blur(10px);
+  border: 2px solid ${props => props.$unlocked
+    ? 'rgba(255, 255, 255, 0.5)'
+    : 'rgba(255, 255, 255, 0.3)'
+  };
+  box-shadow: ${props => props.$unlocked
+    ? '0 8px 25px rgba(255, 105, 180, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.6)'
+    : '0 4px 15px rgba(255, 100, 150, 0.3)'
+  };
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  color: white;
+  font-size: 36px;
   font-weight: 600;
-  letter-spacing: 4px;
+  position: relative;
+  overflow: hidden;
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: ${props => props.$unlocked
+    ? 'radial-gradient(circle, rgba(255, 255, 255, 0.3) 0%, transparent 70%)'
+    : 'none'
+  };
+    animation: ${props => props.$unlocked ? 'glow 2s ease-in-out infinite' : 'none'};
+  }
+
+  @keyframes glow {
+    0%, 100% { transform: translate(0, 0); opacity: 0; }
+    50% { transform: translate(-25%, -25%); opacity: 1; }
+  }
+  
+  @media (max-width: 400px) {
+    width: 120px;
+    height: 100px;
+  }
+`;
+
+const GameNumber = styled(motion.span)`
+  font-size: 60px;
+  font-weight: 700;
+  color: #fff;
+  text-shadow: 
+    0 0 20px rgba(255, 105, 180, 0.8),
+    0 0 40px rgba(255, 20, 147, 0.5);
+  position: relative;
+  z-index: 2;
+`;
+
+const QuestionMark = styled(motion.span)`
+  font-size: 50px;
+  opacity: 0.5;
+  font-weight: 600;
+`;
+
+const Sparkle = styled.span`
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  font-size: 20px;
+  animation: sparkle 1.5s ease-in-out infinite;
+  
+  @keyframes sparkle {
+    0%, 100% { opacity: 1; transform: scale(1) rotate(0deg); }
+    50% { opacity: 0.5; transform: scale(1.2) rotate(180deg); }
+  }
+`;
+
+const PasswordSection = styled(motion.div)`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 25px;
+  padding: 30px 40px;
+  box-shadow: 0 8px 32px rgba(255, 105, 180, 0.3);
+`;
+
+const PasswordLabel = styled.div`
+  color: white;
+  font-size: 22px;
+  margin-bottom: 15px;
+  font-weight: 600;
+  text-shadow: 0 2px 8px rgba(255, 105, 180, 0.4);
+`;
+
+const PasswordInput = styled.input`
+  width: 200px;
+  height: 55px;
+  border-radius: 15px;
+  border: 2px solid ${props => props.$error
+    ? 'rgba(255, 100, 100, 0.6)'
+    : 'rgba(255, 255, 255, 0.4)'
+  };
+  text-align: center;
+  font-size: 28px;
+  margin-bottom: 20px;
+  outline: none;
+  background: rgba(255, 255, 255, 0.25);
+  color: #fff;
+  font-weight: 700;
+  letter-spacing: 8px;
   text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(5px);
+  transition: all 0.3s ease;
+  font-family: 'Arial', sans-serif;
+
+  &:focus {
+    border-color: rgba(255, 255, 255, 0.6);
+    box-shadow: 0 0 20px rgba(255, 105, 180, 0.5);
+    transform: scale(1.02);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
 
   ::placeholder {
-    color: rgba(255, 255, 255, 0.6);
+    color: rgba(255, 255, 255, 0.4);
+    letter-spacing: 4px;
   }
 `;
 
 const ContinueButton = styled(motion.button)`
-  background: linear-gradient(135deg, #ff8fb2, #ff5fa3);
+  position: relative;
+  background: ${props => props.$disabled
+    ? 'linear-gradient(135deg, #ccc 0%, #aaa 100%)'
+    : 'linear-gradient(135deg, #ff69b4 0%, #ff1493 100%)'
+  };
   border: none;
-  border-radius: 40px;
-  padding: 10px 28px;
-  font-size: 22px;
+  border-radius: 50px;
+  padding: 14px 40px;
+  font-size: 24px;
   color: white;
+  font-weight: 700;
+  cursor: ${props => props.$disabled ? 'not-allowed' : 'pointer'};
+  box-shadow: ${props => props.$disabled
+    ? '0 4px 10px rgba(0, 0, 0, 0.2)'
+    : '0 6px 20px rgba(255, 20, 147, 0.5)'
+  };
+  font-family: "Dancing Script", cursive;
+  overflow: hidden;
+  opacity: ${props => props.$disabled ? 0.6 : 1};
+  
+  span {
+    position: relative;
+    z-index: 1;
+  }
+`;
+
+const ButtonShine = styled.div`
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.4),
+    transparent
+  );
+  animation: shine 3s infinite;
+  
+  @keyframes shine {
+    0% { left: -100%; }
+    50% { left: 100%; }
+    100% { left: 100%; }
+  }
+`;
+
+const ErrorText = styled(motion.div)`
+  color: #fff;
+  background: rgba(255, 100, 100, 0.3);
+  border: 1px solid rgba(255, 100, 100, 0.5);
+  padding: 8px 20px;
+  border-radius: 20px;
+  margin-top: 15px;
+  font-size: 18px;
   font-weight: 600;
-  cursor: pointer;
-  box-shadow: 0 6px 15px rgba(255, 100, 150, 0.5);
+  backdrop-filter: blur(5px);
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
 `;
 
-const ErrorText = styled.div`
-  color: #ffeaea;
-  margin-top: 10px;
-  font-size: 20px;
-`;
+const Cursor = styled.span`
+  display: inline-block;
+  margin-left: 3px;
+  width: 10px;
+  opacity: ${(p) => (p.$visible ? 1 : 0)};
+  animation: ${(p) => (p.$visible ? "blink 0.8s infinite" : "none")};
 
+  @keyframes blink {
+    0%, 49% { opacity: 1; }
+    50%, 100% { opacity: 0; }
+  }
+`;

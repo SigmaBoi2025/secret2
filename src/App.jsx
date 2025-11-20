@@ -1,56 +1,65 @@
 import { useState, useRef, useEffect } from "react";
-import { motion } from "framer-motion";
 import styled from "styled-components";
+import { motion } from "framer-motion";
 import Intro from "./pages/Intro";
 import MiniGameUnlock from "./pages/MiniGameUnlock";
+import bgm from "./assets/sounds/bgm_intro.mp3";
 
 export default function App() {
   const [capyExit, setCapyExit] = useState(false);
   const [musicStarted, setMusicStarted] = useState(false);
+  const [miniCapiReady, setMiniCapiReady] = useState(false);
   const audioRef = useRef(null);
 
   useEffect(() => {
-    // Chuẩn bị nhạc nền
-    audioRef.current = new Audio("/src/assets/sounds/bgm_intro.mp3");
-    audioRef.current.volume = 0.5;
+    audioRef.current = new Audio(bgm);
     audioRef.current.loop = true;
+    audioRef.current.volume = 0.5;
   }, []);
 
-  const handleNext = () => {
-    // Bật nhạc khi nhấn YES
-    if (!musicStarted) {
+  const handleIntroNext = () => {
+    if (!musicStarted && audioRef.current) {
       audioRef.current.play();
       setMusicStarted(true);
     }
 
-    // Capybara rời màn hình
     setCapyExit(true);
 
-    // Sau 2.5s thì cuộn xuống mini game
     setTimeout(() => {
       window.scrollTo({
         top: window.innerHeight,
         behavior: "smooth",
       });
     }, 2500);
+
+    setTimeout(() => {
+      window.scrollTo({
+        top: window.innerHeight,
+        behavior: "smooth",
+      });
+
+      //  🔥 0.8s sau scroll thì báo MiniGameUnlock bật Capi lên
+      setTimeout(() => setMiniCapiReady(true), 800);
+
+    }, 2500);
   };
+
+
 
   return (
     <AppContainer>
-      {/* Màn 1: Intro */}
       <Section>
-        <Intro onNext={handleNext} capyExit={capyExit} />
+        <Intro onNext={handleIntroNext} capyExit={capyExit} />
       </Section>
 
-      {/* Màn 2: Mini Game Unlock */}
       <Section>
-        <MiniGameUnlock onNext={() => alert("🎉 Sang màn tiếp theo!")} />
+        <MiniGameUnlock onNext={() => alert("🎉 Sang màn tiếp theo!")} showCapi={miniCapiReady} />
       </Section>
     </AppContainer>
   );
 }
 
-/* ✅ Styled Components */
+/* 🎨 Styled Components */
 const AppContainer = styled.div`
   height: 200vh;
   width: 100vw;
