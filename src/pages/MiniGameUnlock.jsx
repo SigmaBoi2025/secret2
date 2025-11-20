@@ -2,6 +2,9 @@ import { useState, useEffect } from "react";
 import styled from "styled-components";
 import { motion } from "framer-motion";
 import { capybaraIdle } from "../assets";
+import HeartCatchGame from "../components/HeartCatchGame";
+import RiddleGame from "../components/RiddleGame";
+import { saveGameProgress, getGameProgress } from "../utils/localStorage";
 
 /* 🩷 Trang Mini Game Unlock */
 export default function MiniGameUnlock({ onNext, showCapi: showCapiProp }) {
@@ -12,7 +15,19 @@ export default function MiniGameUnlock({ onNext, showCapi: showCapiProp }) {
   const [showCapi, setShowCapi] = useState(false);
   const [titleVisible, setTitleVisible] = useState(false);
   const [displayTitle, setDisplayTitle] = useState("");
+  const [startTitle, setStartTitle] = useState(false);
+  const [typingDone, setTypingDone] = useState(false);
+  const [startSubtitle, setStartSubtitle] = useState(false);
+  const [startGrid, setStartGrid] = useState(false);
+  const [startPassword, setStartPassword] = useState(false);
   const fullTitle = "Giải mã bí mật của Capybara";
+
+  const [subtitleText, setSubtitleText] = useState("");
+  const fullSubtitle = "Nhấn vào các ô để mở khóa!";
+
+  const [showHeartGame, setShowHeartGame] = useState(false);
+  const [activeGame, setActiveGame] = useState(null);
+
 
   const correctCode = "1608";
 
@@ -37,39 +52,78 @@ export default function MiniGameUnlock({ onNext, showCapi: showCapiProp }) {
   }, []);
 
   useEffect(() => {
+    if (!startTitle) return;
+
+    let index = 0;
+    setTitleVisible(true);
+
+    const interval = setInterval(() => {
+      if (index < fullTitle.length) {
+        setDisplayTitle(fullTitle.slice(0, index + 1));
+        index++;
+      } else {
+        clearInterval(interval);
+        setTypingDone(true);
+
+        // Sau khi gõ xong 250ms → hiện subtitle
+        setTimeout(() => setStartSubtitle(true), 250);
+
+        // Sau subtitle 400ms → hiện grid
+        setTimeout(() => setStartGrid(true), 650);
+
+        // Sau grid khoảng 700ms → hiện password section
+        setTimeout(() => setStartPassword(true), 1300);
+      }
+    }, 55);
+
+    return () => clearInterval(interval);
+  }, [startTitle]);
+
+  useEffect(() => {
+    if (!startSubtitle) return;
+
     let index = 0;
 
-    const timer = setTimeout(() => setTitleVisible(true), 300);
+    const interval = setInterval(() => {
+      if (index < fullSubtitle.length) {
+        setSubtitleText(fullSubtitle.slice(0, index + 1));
+        index++;
+      } else {
+        clearInterval(interval);
+      }
+    }, 35); // typing nhanh hơn tiêu đề cho đẹp
 
-    const typeTimer = setTimeout(() => {
-      const interval = setInterval(() => {
-        if (index < fullTitle.length) {
-          setDisplayTitle(fullTitle.slice(0, index + 1));
-          index++;
-        } else {
-          clearInterval(interval);
-        }
-      }, 55);
-
-      return () => clearInterval(interval);
-    }, 500);
-
-    return () => {
-      clearTimeout(timer);
-      clearTimeout(typeTimer);
-    };
-  }, []);
+    return () => clearInterval(interval);
+  }, [startSubtitle]);
 
   useEffect(() => {
     if (showCapiProp) {
-      setTimeout(() => setShowCapi(true), 200);
+      // Cho Capi nhô lên trước
+      setTimeout(() => {
+        setShowCapi(true);
+
+        // Sau khi Capi nhô khoảng 1.4s → bắt đầu typing tiêu đề
+        setTimeout(() => setStartTitle(true), 1400);
+
+      }, 200);
     }
   }, [showCapiProp]);
 
+  // const handleMiniGameClick = (index) => {
+  //   const newResults = [...gameResults];
+  //   newResults[index] = true;
+  //   setGameResults(newResults);
+  // };
+
   const handleMiniGameClick = (index) => {
+    setActiveGame(index);
+  };
+
+  const handleMiniGameWin = (index) => {
     const newResults = [...gameResults];
     newResults[index] = true;
     setGameResults(newResults);
+    localStorage.setItem("gameProgress", JSON.stringify(newResults));
   };
 
   const handleContinue = () => {
@@ -82,6 +136,8 @@ export default function MiniGameUnlock({ onNext, showCapi: showCapiProp }) {
   };
 
   const allUnlocked = gameResults.every((r) => r);
+
+
 
   return (
     <Screen>
@@ -134,18 +190,26 @@ export default function MiniGameUnlock({ onNext, showCapi: showCapiProp }) {
       >
         <Title
           initial={{ opacity: 0, scale: 0.9, y: -10 }}
-          animate={{
-            opacity: titleVisible ? 1 : 0,
-            scale: titleVisible ? 1 : 0.9,
-            y: titleVisible ? 0 : -10,
-          }}
+          animate={
+            titleVisible
+              ? { opacity: 1, y: 0, scale: 1 }
+              : { opacity: 0, y: -10, scale: 0.9 }
+          }
           transition={{ duration: 0.6, type: "spring", stiffness: 150 }}
         >
           🔐 {displayTitle}
           {displayTitle.length < fullTitle.length && <Cursor>|</Cursor>}
         </Title>
 
-        <Subtitle>Nhấn vào các ô để mở khóa!</Subtitle>
+        {startSubtitle && (
+          <Subtitle
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+          >
+            {subtitleText}
+          </Subtitle>
+        )}
 
         <GameGrid>
           {gameResults.map((won, i) => (
@@ -155,9 +219,9 @@ export default function MiniGameUnlock({ onNext, showCapi: showCapiProp }) {
               whileHover={{ scale: 1.08, rotate: 5 }}
               whileTap={{ scale: 0.92 }}
               $unlocked={won}
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: i * 0.15, duration: 0.5 }}
+              initial={{ opacity: 0, scale: 0.6 }}
+              animate={startGrid ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.6 }}
+              transition={{ delay: startGrid ? i * 0.12 : 0, duration: 0.5 }}
             >
               <CardContent>
                 {won ? (
@@ -186,12 +250,15 @@ export default function MiniGameUnlock({ onNext, showCapi: showCapiProp }) {
         </GameGrid>
 
         <PasswordSection
-          initial={{ opacity: 0, y: 20 }}
-          animate={{
-            opacity: allUnlocked ? 1 : 0.4,
-            y: allUnlocked ? 0 : 20
-          }}
-          transition={{ duration: 0.5 }}
+          // initial={{ opacity: 0, y: 20 }}
+          // animate={{
+          //   opacity: allUnlocked ? 1 : 0.4,
+          //   y: allUnlocked ? 0 : 20
+          // }}
+          // transition={{ duration: 0.5 }}
+          initial={{ opacity: 0, scale: 0.7, y: 20 }}
+          animate={startPassword ? { opacity: 1, scale: 1, y: 0 } : { opacity: 0, scale: 0.7, y: 20 }}
+          transition={{ duration: 0.6, type: "spring" }}
         >
           <PasswordLabel>Nhập mật khẩu 4 chữ số:</PasswordLabel>
           <PasswordInput
@@ -224,6 +291,19 @@ export default function MiniGameUnlock({ onNext, showCapi: showCapiProp }) {
           )}
         </PasswordSection>
       </Container>
+      {activeGame === 0 && (
+        <HeartCatchGame
+          onClose={() => setActiveGame(null)}
+          onWin={() => handleMiniGameWin(0)}
+        />
+      )}
+
+      {activeGame === 1 && (
+        <RiddleGame
+          onClose={() => setActiveGame(null)}
+          onWin={() => handleMiniGameWin(1)}
+        />
+      )}
     </Screen>
   );
 }

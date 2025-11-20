@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import styled from "styled-components";
 import { motion } from "framer-motion";
-import { bgIntro, capybaraIdle } from "../assets";
+import { capybaraIdle } from "../assets";
 import bgm from "../assets/sounds/bgm_intro.mp3";
 
 /* 💖 Floating hearts component */
@@ -50,6 +50,7 @@ export default function Intro({ onNext, capyExit }) {
   const [textVisible, setTextVisible] = useState(false);
   const [showButton, setShowButton] = useState(false);
   const [displayText, setDisplayText] = useState("");
+  const [closingBubble, setClosingBubble] = useState(false);
   const fullText = "Hi Love, Do you want to see a little surprise for you?";
 
   // Show text after capybara enters
@@ -83,7 +84,12 @@ export default function Intro({ onNext, capyExit }) {
     const audio = new Audio(bgm);
     audio.volume = 0.5;
     audio.play().catch(err => console.log("Audio play failed:", err));
-    onNext(); // GỌI LÊN APP
+    setClosingBubble(true); // bắt đầu đóng bubble
+
+    // đợi bubble đóng xong (0.6–0.7s), rồi mới cho capi chạy
+    setTimeout(() => {
+      onNext();
+    }, 700);
   };
 
   return (
@@ -93,12 +99,14 @@ export default function Intro({ onNext, capyExit }) {
       <CenterBox>
         <SpeechBubble
           initial={{ opacity: 0, scale: 0.7, y: -25 }}
-          animate={{
-            opacity: textVisible ? 1 : 0,
-            scale: textVisible ? 1 : 0.7,
-            y: textVisible ? 0 : -25,
-          }}
-          transition={{ duration: 0.7, type: "spring", stiffness: 150 }}
+          animate={
+            closingBubble
+              ? { opacity: 0, scale: 0.3, y: -20 }     // 🔥 hiệu ứng biến mất
+              : textVisible
+                ? { opacity: 1, scale: 1, y: 0 }       // trạng thái mở
+                : { opacity: 0, scale: 0.7, y: -25 }
+          }
+          transition={{ duration: 0.6, ease: "easeInOut" }}
         >
           <BubbleContent>
             {displayText}
