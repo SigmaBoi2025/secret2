@@ -1,10 +1,12 @@
+import { saveGameProgress, getGameProgress } from "../utils/localStorage";
 import { useState, useEffect } from "react";
 import styled from "styled-components";
 import { motion } from "framer-motion";
 import { capybaraIdle } from "../assets";
 import HeartCatchGame from "../components/HeartCatchGame";
 import RiddleGame from "../components/RiddleGame";
-import { saveGameProgress, getGameProgress } from "../utils/localStorage";
+import JigsawGame from "../components/JigsawGame";
+
 
 /* 🩷 Trang Mini Game Unlock */
 export default function MiniGameUnlock({ onNext, showCapi: showCapiProp }) {
@@ -24,8 +26,6 @@ export default function MiniGameUnlock({ onNext, showCapi: showCapiProp }) {
 
   const [subtitleText, setSubtitleText] = useState("");
   const fullSubtitle = "Nhấn vào các ô để mở khóa!";
-
-  const [showHeartGame, setShowHeartGame] = useState(false);
   const [activeGame, setActiveGame] = useState(null);
 
 
@@ -116,7 +116,7 @@ export default function MiniGameUnlock({ onNext, showCapi: showCapiProp }) {
   // };
 
   const handleMiniGameClick = (index) => {
-    setActiveGame(index);
+    setActiveGame(index); // ✅ cho tất cả các game dùng chung
   };
 
   const handleMiniGameWin = (index) => {
@@ -302,6 +302,20 @@ export default function MiniGameUnlock({ onNext, showCapi: showCapiProp }) {
         <RiddleGame
           onClose={() => setActiveGame(null)}
           onWin={() => handleMiniGameWin(1)}
+        />
+      )}
+
+      {activeGame === 2 && (
+        <JigsawGame
+          onClose={() => setActiveGame(null)}
+          onWin={() => handleMiniGameWin(2)}
+        />
+      )}
+
+      {activeGame === 3 && (
+        <MemoryFlipGame
+          onClose={() => setActiveGame(null)}
+          onWin={() => handleMiniGameWin(3)}
         />
       )}
     </Screen>

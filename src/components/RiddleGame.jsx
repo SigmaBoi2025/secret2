@@ -37,14 +37,10 @@ export default function RiddleGame({ onClose, onWin }) {
       <Modal>
         <CloseButton onClick={onClose}>✖</CloseButton>
         <Riddle>
-          Capybara nhớ rằng có hai ngày đặc biệt:
-          <br />Một ngày có số <strong>0</strong> và <strong>2</strong>,
-          một ngày có <strong>2</strong> và <strong>7</strong>,
-          <br />Cả hai đều nằm trong tháng <strong>11</strong>.
-          <br />Cộng tất cả các con số lại rồi tiếp tục cộng các chữ số của kết quả đó,
-          <br />em sẽ ra được con số bí mật 💫
-          <br /><br />
-          Hãy nhập con số đó nhé:
+          Hai thiên thần nhỏ ghé trần gian,<br />
+          Tám số gọi nhau kết mối an.<br />
+          Chẻ kết quả ra thành hai nhịp,<br />
+          Gom lại hóa tình chẳng vội tan.
         </Riddle>
         <Input
           type="text"
@@ -70,22 +66,20 @@ export default function RiddleGame({ onClose, onWin }) {
 const Overlay = styled.div`
   position: fixed;
   inset: 0;
-  background: rgba(255, 175, 200, 0.4);
+  background: rgba(255, 180, 205, 0.4);
   backdrop-filter: blur(10px);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 999;
-  touch-action: none;
-  overscroll-behavior: none;
-  -webkit-overflow-scrolling: auto;
 `;
 
 const Modal = styled(motion.div)`
+  position: relative;
   width: 80vw;
-  height: auto;
+  height: 80vh;
   max-width: 520px;
-  max-height: 80vh;
+  max-height: 750px;
 
   background: rgba(255, 255, 255, 0.25);
   border-radius: 28px;
@@ -98,11 +92,7 @@ const Modal = styled(motion.div)`
     0 10px 32px rgba(255, 100, 170, 0.35),
     inset 0 2px 0 rgba(255, 255, 255, 0.5);
 
-  touch-action: none;
-  overscroll-behavior: none;
-  -webkit-overflow-scrolling: auto;
-
-  overflow-y: auto; /* 🔥 Quan trọng để text dài không phá layout */
+  overflow-y: auto;
 `;
 
 const CloseButton = styled.button`
@@ -136,6 +126,7 @@ const CloseButton = styled.button`
 `;
 
 const Riddle = styled.div`
+  margin-top: 200px;
   font-size: 24px;
   color: #fff;
   line-height: 1.55;
@@ -145,39 +136,48 @@ const Riddle = styled.div`
 `;
 
 const Input = styled.input`
-  margin-top: 25px;
-  width: 120px;
-  height: 48px;
+  margin-top: 32px;
+  width: 70%;
+  max-width: 280px;
+  height: 55px;
+
   border-radius: 16px;
   border: 2px solid rgba(255,255,255,0.6);
-  background: rgba(255,255,255,0.8);
+  background: rgba(255,255,255,0.85);
   box-shadow: inset 0 0 6px rgba(255,120,150,0.3);
-  font-size: 28px;
+
+  font-size: 26px;
   font-weight: 700;
   text-align: center;
   color: #ff69a5;
+
   outline: none;
 
   &:focus {
-    transform: scale(1.03);
-    box-shadow: 0 0 14px rgba(255,120,170,0.4);
+    transform: scale(1.04);
+    box-shadow: 0 0 16px rgba(255,120,170,0.4);
   }
 `;
 
 const SubmitButton = styled(motion.button)`
-  margin-top: 24px;
+  margin-top: 26px;
+
+  width: 70%;
+  max-width: 280px;
+  height: 55px;
+
   background: linear-gradient(135deg, #ff8fb2, #ff5fa3);
-  padding: 12px 32px;
   border-radius: 40px;
   color: white;
   font-size: 24px;
   font-weight: 700;
   border: none;
+
   box-shadow: 0 6px 14px rgba(255, 100, 150, 0.4);
   cursor: pointer;
 
   &:hover {
-    transform: scale(1.07);
+    transform: scale(1.06);
   }
 `;
 

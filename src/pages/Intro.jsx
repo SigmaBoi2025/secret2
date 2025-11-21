@@ -115,41 +115,11 @@ export default function Intro({ onNext, capyExit }) {
           <BubbleTail />
         </SpeechBubble>
 
-        {/* <CapiWrapper
-          initial={{ x: "-100vw" }}
-          animate={
-            capyExit
-              ? { x: "150vw", rotate: 10 }
-              : { x: 0 }
-          }
-          transition={{ duration: 2.3, ease: "easeInOut" }}
-        >
-          <Capi
-            src={capybaraIdle}
-            style={{
-              transform: capyExit ? "scaleX(-1)" : "scaleX(1)",
-            }}
-            animate={
-              capyExit
-                ? {}
-                : {
-                  y: [0, -8, 0, 4, 0],
-                  rotate: [0, 2.5, 0, -2.5, 0],
-                }
-            }
-            transition={{
-              duration: 2.2,
-              ease: "easeInOut",
-              repeat: capyExit ? 0 : Infinity,
-            }}
-          />
-        </CapiWrapper> */}
-
         <CapiWrapper
           initial={{ x: "-100vw" }}
           animate={
             capyExit
-              ? { x: "100vw", opacity: 0 } // 👉 Khi capyExit=true, chạy ra bên phải
+              ? { x: "100vw" } // 👉 Khi capyExit=true, chạy ra bên phải
               : { x: 0 } // Mặc định đứng giữa
           }
           transition={{ duration: 2, ease: "easeInOut" }}
