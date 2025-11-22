@@ -9,6 +9,7 @@ import bgm_intro from "./assets/sounds/bgm_intro.mp3";
 import bgm_happy from "./assets/sounds/bgm_happy.mp3";
 import GalleryHeart from "./pages/GalleryHeart";
 import Letter from "./pages/Letter";
+import Ticket from "./pages/Ticket";
 
 export default function App() {
   const audioRef = useRef(null);
@@ -66,6 +67,7 @@ export default function App() {
           } />
           <Route path="/gallery" element={<GalleryHeart />} />
           <Route path="/letter" element={<Letter />} />
+          <Route path="/ticket" element={<Ticket />} />
         </Routes>
 
       </AppContainer>

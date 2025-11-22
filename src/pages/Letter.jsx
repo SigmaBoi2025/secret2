@@ -1,6 +1,7 @@
 import styled from "styled-components";
 import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function Letter() {
   const fullText = `
@@ -18,6 +19,7 @@ Chúc em tuổi mới thật hạnh phúc, thật xinh đẹp, và luôn luôn �
 `;
 
   const [text, setText] = useState("");
+  const navigate = useNavigate();
 
   // typing effect
   useEffect(() => {
@@ -29,6 +31,16 @@ Chúc em tuổi mới thật hạnh phúc, thật xinh đẹp, và luôn luôn �
     }, 25);
 
     return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    const handleScroll = (e) => {
+      if (e.deltaY > 30) {
+        navigate("/ticket");
+      }
+    };
+    window.addEventListener("wheel", handleScroll);
+    return () => window.removeEventListener("wheel", handleScroll);
   }, []);
 
   return (
