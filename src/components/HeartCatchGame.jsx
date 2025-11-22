@@ -196,6 +196,24 @@ const Overlay = styled.div`
   z-index: 999;
 `;
 
+// const GameArea = styled(motion.div)`
+//   position: relative;
+//   width: 80vw;
+//   height: 80vh;
+//   max-width: 520px;
+//   max-height: 750px;
+//   background: rgba(255, 255, 255, 0.25);
+//   border-radius: 28px;
+//   padding: 20px;
+//   overflow: hidden;
+
+//   &.shake {
+//     animation: shakeAnim 0.4s ease;
+//   }
+
+
+// `;
+
 const GameArea = styled(motion.div)`
   position: relative;
   width: 80vw;
@@ -207,11 +225,18 @@ const GameArea = styled(motion.div)`
   padding: 20px;
   overflow: hidden;
 
+  animation: popup 0.45s ease;
+
+  @keyframes popup {
+    0% { transform: scale(0.7) translateY(30px); opacity: 0; }
+    100% { transform: scale(1) translateY(0); opacity: 1; }
+  }
+
   &.shake {
     animation: shakeAnim 0.4s ease;
   }
 
-  @keyframes shakeAnim {
+    @keyframes shakeAnim {
     0% { transform: translateX(0); }
     20% { transform: translateX(-10px); }
     40% { transform: translateX(10px); }

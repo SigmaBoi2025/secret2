@@ -6,10 +6,14 @@ import { capybaraIdle } from "../assets";
 import HeartCatchGame from "../components/HeartCatchGame";
 import RiddleGame from "../components/RiddleGame";
 import JigsawGame from "../components/JigsawGame";
+import MemoryFlipGame from "../components/MemoryFlipGame";
+import bgHappy from "../assets/sounds/bgm_happy.mp3"
+
+
 
 
 /* 🩷 Trang Mini Game Unlock */
-export default function MiniGameUnlock({ onNext, showCapi: showCapiProp }) {
+export default function MiniGameUnlock({ onNext, showCapi: showCapiProp, playMusic, stopMusic }) {
   const [gameResults, setGameResults] = useState([false, false, false, false]);
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -128,10 +132,11 @@ export default function MiniGameUnlock({ onNext, showCapi: showCapiProp }) {
 
   const handleContinue = () => {
     if (password === correctCode) {
+      stopMusic();                 // tắt nhạc intro
+      playMusic(bgHappy);             // bật nhạc màn 2
       onNext();
     } else {
       setError("Mật khẩu sai rồi 😝");
-      setTimeout(() => setError(""), 2000);
     }
   };
 

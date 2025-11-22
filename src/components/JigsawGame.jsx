@@ -130,6 +130,30 @@ const Overlay = styled.div`
   z-index: 999;
 `;
 
+// const Modal = styled.div`
+//   position: relative;
+//   width: 80vw;
+//   height: 80vh;
+//   max-width: 520px;
+//   max-height: 750px;
+
+//   background: rgba(255, 255, 255, 0.25);
+//   border-radius: 28px;
+//   padding: 34px 28px;
+//   text-align: center;
+
+//   backdrop-filter: blur(16px);
+//   border: 2px solid rgba(255, 255, 255, 0.45);
+//   box-shadow:
+//     0 10px 32px rgba(255, 100, 170, 0.35),
+//     inset 0 2px 0 rgba(255, 255, 255, 0.5);
+
+//   display: flex;
+//   flex-direction: column;
+//   align-items: center;
+//   justify-content: flex-start;
+// `;
+
 const Modal = styled.div`
   position: relative;
   width: 80vw;
@@ -152,7 +176,15 @@ const Modal = styled.div`
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
+
+  animation: popup 0.45s ease;
+
+  @keyframes popup {
+    0% { transform: scale(0.7) translateY(30px); opacity: 0; }
+    100% { transform: scale(1) translateY(0); opacity: 1; }
+  }
 `;
+
 
 const CloseButton = styled.button`
   position: absolute;

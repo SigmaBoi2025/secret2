@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import styled from "styled-components";
 import { motion } from "framer-motion";
 import { capybaraIdle } from "../assets";
-import bgm from "../assets/sounds/bgm_intro.mp3";
+import { useNavigate } from "react-router-dom";
 
 /* 💖 Floating hearts component */
 const FloatingHearts = () => {
@@ -52,6 +52,8 @@ export default function Intro({ onNext, capyExit }) {
   const [displayText, setDisplayText] = useState("");
   const [closingBubble, setClosingBubble] = useState(false);
   const fullText = "Hi Love, Do you want to see a little surprise for you?";
+  const navigate = useNavigate();
+
 
   // Show text after capybara enters
   useEffect(() => {
@@ -81,14 +83,14 @@ export default function Intro({ onNext, capyExit }) {
   }, [textVisible, fullText]);
 
   const handleYes = () => {
-    const audio = new Audio(bgm);
-    audio.volume = 0.5;
-    audio.play().catch(err => console.log("Audio play failed:", err));
+    // const audio = new Audio(bgm);
+    // audio.volume = 0.5;
+    // audio.play().catch(err => console.log("Audio play failed:", err));
     setClosingBubble(true); // bắt đầu đóng bubble
 
     // đợi bubble đóng xong (0.6–0.7s), rồi mới cho capi chạy
     setTimeout(() => {
-      onNext();
+      onNext(navigate);
     }, 700);
   };
 
