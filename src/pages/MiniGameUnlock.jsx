@@ -7,7 +7,9 @@ import HeartCatchGame from "../components/HeartCatchGame";
 import RiddleGame from "../components/RiddleGame";
 import JigsawGame from "../components/JigsawGame";
 import MemoryFlipGame from "../components/MemoryFlipGame";
-import bgHappy from "../assets/sounds/bgm_happy.mp3"
+import bgHappy from "../assets/sounds/bgm_happy.mp3";
+import { useNavigate } from "react-router-dom";
+
 
 
 
@@ -31,7 +33,7 @@ export default function MiniGameUnlock({ onNext, showCapi: showCapiProp, playMus
   const [subtitleText, setSubtitleText] = useState("");
   const fullSubtitle = "Nhấn vào các ô để mở khóa!";
   const [activeGame, setActiveGame] = useState(null);
-
+  const navigate = useNavigate();
 
   const correctCode = "1608";
 
@@ -134,7 +136,7 @@ export default function MiniGameUnlock({ onNext, showCapi: showCapiProp, playMus
     if (password === correctCode) {
       stopMusic();                 // tắt nhạc intro
       playMusic(bgHappy);             // bật nhạc màn 2
-      onNext();
+      onNext(navigate);
     } else {
       setError("Mật khẩu sai rồi 😝");
     }

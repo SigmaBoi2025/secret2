@@ -11,6 +11,7 @@ import GalleryHeart from "./pages/GalleryHeart";
 import Letter from "./pages/Letter";
 import Ticket from "./pages/Ticket";
 
+
 export default function App() {
   const audioRef = useRef(null);
 
@@ -53,10 +54,7 @@ export default function App() {
     <BrowserRouter>
       <AppContainer>
         <Routes>
-          <Route path="/" element={
-            <Intro onNext={handleIntroNext} />
-          } />
-
+          <Route path="/" element={<Intro onNext={handleIntroNext} />} />
           <Route path="/unlock" element={
             <MiniGameUnlock
               onNext={handleUnlockNext}

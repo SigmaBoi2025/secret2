@@ -1,7 +1,7 @@
 import styled from "styled-components";
 import { motion } from "framer-motion";
 import { useEffect } from "react";
-import ticket from "../assets/capybara/capybara_ticket.png"; // đường dẫn ảnh
+import ticket from "../assets/capybara/capibara_ticket.png"; // đường dẫn ảnh
 
 export default function Ticket() {
 
@@ -31,13 +31,13 @@ export default function Ticket() {
 /* ---------------- STYLES ---------------- */
 
 const Screen = styled.div`
-  height: 100vh;
-  width: 100vw;
+  position: fixed;
+  inset: 0;
   padding: 20px;
 
   background: linear-gradient(135deg, #ff9eb5, #ffb6c1, #ffc0cb);
   overflow: hidden;
-  position: relative;
+  z-index: 999;
 
   display: flex;
   justify-content: center;
@@ -46,6 +46,7 @@ const Screen = styled.div`
   font-family: "Dancing Script", cursive;
 `;
 
+
 const TicketBox = styled(motion.div)`
   width: 88%;
   height: 80%;
@@ -53,8 +54,10 @@ const TicketBox = styled(motion.div)`
 
   background: rgba(255, 255, 255, 0.35);
   backdrop-filter: blur(14px);
-  border-radius: 28px;
-  padding: 28px 26px;
+  border-radius: 26px;
+
+  padding: 32px 24px;
+  overflow: hidden;
 
   box-shadow:
     0 8px 26px rgba(255, 100, 150, 0.35),
@@ -70,19 +73,22 @@ const TicketImg = styled.img`
   width: 70%;
   max-width: 320px;
   user-select: none;
+  object-fit: contain;
+
   filter: drop-shadow(0 6px 14px rgba(255, 80, 150, 0.35));
 `;
 
 const TicketText = styled.div`
-  margin-top: 28px;
-  font-size: 28px;
+  margin-top: 26px;
+  font-size: 26px;
   color: #ffffffee;
   text-align: center;
-  line-height: 1.5;
-  text-shadow: 0 2px 8px rgba(255, 20, 147, 0.4);
+
+  line-height: 1.6;
+  text-shadow: 0 2px 8px rgba(255, 20, 147, 0.45);
 
   @media(max-width: 480px){
-    font-size: 22px;
+    font-size: 20px;
   }
 `;
 
