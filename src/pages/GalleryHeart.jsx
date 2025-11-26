@@ -44,12 +44,35 @@ export default function GalleryHeart() {
   }, []);
 
   useEffect(() => {
-    const handler = (e) => {
-      if (e.deltaY > 20) navigate("/letter");
+    let startY = 0;
+
+    const onTouchStart = (e) => {
+      startY = e.touches[0].clientY;
     };
-    window.addEventListener("wheel", handler);
-    return () => window.removeEventListener("wheel", handler);
+
+    const onTouchMove = (e) => {
+      const currentY = e.touches[0].clientY;
+      if (startY - currentY > 50) {
+        // Vuốt lên
+        navigate("/letter");  // hoặc /ticket tùy trang
+      }
+    };
+
+    const onWheel = (e) => {
+      if (e.deltaY > 20) navigate("/letter"); // PC
+    };
+
+    window.addEventListener("touchstart", onTouchStart);
+    window.addEventListener("touchmove", onTouchMove);
+    window.addEventListener("wheel", onWheel);
+
+    return () => {
+      window.removeEventListener("touchstart", onTouchStart);
+      window.removeEventListener("touchmove", onTouchMove);
+      window.removeEventListener("wheel", onWheel);
+    };
   }, []);
+
 
   return (
     <Screen>

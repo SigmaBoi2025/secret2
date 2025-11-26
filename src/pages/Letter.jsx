@@ -34,14 +34,35 @@ Chúc em tuổi mới thật hạnh phúc, thật xinh đẹp, và luôn luôn �
   }, []);
 
   useEffect(() => {
-    const handleScroll = (e) => {
-      if (e.deltaY > 30) {
-        navigate("/ticket");
+    let startY = 0;
+
+    const onTouchStart = (e) => {
+      startY = e.touches[0].clientY;
+    };
+
+    const onTouchMove = (e) => {
+      const currentY = e.touches[0].clientY;
+      if (startY - currentY > 50) {
+        // Vuốt lên
+        navigate("/ticket");  // hoặc /ticket tùy trang
       }
     };
-    window.addEventListener("wheel", handleScroll);
-    return () => window.removeEventListener("wheel", handleScroll);
+
+    const onWheel = (e) => {
+      if (e.deltaY > 20) navigate("/ticket"); // PC
+    };
+
+    window.addEventListener("touchstart", onTouchStart);
+    window.addEventListener("touchmove", onTouchMove);
+    window.addEventListener("wheel", onWheel);
+
+    return () => {
+      window.removeEventListener("touchstart", onTouchStart);
+      window.removeEventListener("touchmove", onTouchMove);
+      window.removeEventListener("wheel", onWheel);
+    };
   }, []);
+
 
   return (
     <Screen>
