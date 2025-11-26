@@ -51,7 +51,7 @@ export default function Intro({ onNext, capyExit }) {
   const [showButton, setShowButton] = useState(false);
   const [displayText, setDisplayText] = useState("");
   const [closingBubble, setClosingBubble] = useState(false);
-  const fullText = "Hi Love, Do you want to see a little surprise for you?";
+  const fullText = "Tớ là Capi đây! Quang giấu cái này lâu rồi, Chi cùng tìm với tớ nhé?";
   const navigate = useNavigate();
 
 
@@ -159,7 +159,7 @@ export default function Intro({ onNext, capyExit }) {
         style={{ pointerEvents: showButton ? "auto" : "none" }}
       >
         <ButtonShine />
-        <span>Em đồng ý 💖</span>
+        <span>Ok lun!</span>
       </YesButton>
     </Screen>
   );
@@ -169,7 +169,9 @@ export default function Intro({ onNext, capyExit }) {
 
 const Screen = styled.div`
   position: relative;
-  height: 100vh;
+  height: calc(var(--vh, 1vh) * 100); /* Bắt buộc */
+/* Hoặc thêm song song: */
+height: 100dvh;
   width: 100vw;
   background: linear-gradient(135deg, #ff9eb5 0%, #ffb6c1 50%, #ffc0cb 100%);
   overflow: hidden;

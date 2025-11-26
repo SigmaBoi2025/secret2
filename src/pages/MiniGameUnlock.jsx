@@ -27,10 +27,10 @@ export default function MiniGameUnlock({ onNext, showCapi: showCapiProp, playMus
   const [startSubtitle, setStartSubtitle] = useState(false);
   const [startGrid, setStartGrid] = useState(false);
   const [startPassword, setStartPassword] = useState(false);
-  const fullTitle = "Giải mã bí mật của Capybara";
+  const fullTitle = "Manh mối chỉ ở đâu đó quanh đây thôi";
 
   const [subtitleText, setSubtitleText] = useState("");
-  const fullSubtitle = "Nhấn vào các ô để mở khóa!";
+  const fullSubtitle = "Thử tìm trong các ô dưới đây nhé!";
   const [activeGame, setActiveGame] = useState(null);
   const navigate = useNavigate();
 
@@ -331,7 +331,9 @@ export default function MiniGameUnlock({ onNext, showCapi: showCapiProp, playMus
 /* 🎨 Styled Components */
 const Screen = styled.div`
   position: relative;
-  height: 100vh;
+  height: calc(var(--vh, 1vh) * 100); /* Bắt buộc */
+/* Hoặc thêm song song: */
+height: 100dvh;
   width: 100vw;
   background: linear-gradient(135deg, #ff9eb5 0%, #ffb6c1 50%, #ffc0cb 100%);
   display: flex;

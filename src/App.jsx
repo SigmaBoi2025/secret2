@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import styled from "styled-components";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
@@ -50,6 +50,15 @@ export default function App() {
     navigate("/gallery");
   };
 
+  useEffect(() => {
+    const setVH = () => {
+      document.documentElement.style.setProperty("--vh", `${window.innerHeight * 0.01}px`);
+    };
+    setVH();
+    window.addEventListener("resize", setVH);
+    return () => window.removeEventListener("resize", setVH);
+  }, []);
+
   return (
     <BrowserRouter>
       <AppContainer>
@@ -75,7 +84,9 @@ export default function App() {
 
 /* 🎨 Container */
 const AppContainer = styled.div`
-  height: 100vh;
+  height: calc(var(--vh, 1vh) * 100); /* Bắt buộc */
+/* Hoặc thêm song song: */
+height: 100dvh;
   width: 100vw;
   overflow: hidden;
 `;

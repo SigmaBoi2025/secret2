@@ -270,7 +270,7 @@ const Basket = styled.div`
 `;
 
 const Capi = styled.img`
-  width: 95px;
+  width: 75px;
   filter: drop-shadow(0 5px 10px rgba(255,105,180,0.35));
 `;
 

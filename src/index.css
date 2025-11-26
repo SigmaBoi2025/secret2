@@ -27,7 +27,9 @@ body {
   display: flex;
   place-items: center;
   min-width: 320px;
-  min-height: 100vh;
+  min-height: calc(var(--vh, 1vh) * 100); /* Bắt buộc */
+/* Hoặc thêm song song: */
+height: 100dvh;
 }
 
 h1 {

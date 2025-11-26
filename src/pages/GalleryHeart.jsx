@@ -113,7 +113,9 @@ export default function GalleryHeart() {
 -------------------------------------------- */
 
 const Screen = styled.div`
-  height: 100vh;
+  height: calc(var(--vh, 1vh) * 100); /* Bắt buộc */
+/* Hoặc thêm song song: */
+height: 100dvh;
   width: 100vw;
   background: linear-gradient(135deg, #ff9eb5, #ffb6c1, #ffc0cb);
   overflow: hidden;
