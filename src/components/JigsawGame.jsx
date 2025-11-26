@@ -213,15 +213,15 @@ const CloseButton = styled.button`
 const Board = styled.div`
   margin-top: 60px;
   display: grid;
-  grid-template-columns: repeat(3, 90px);
-  grid-template-rows: repeat(3, 90px);
+  grid-template-columns: repeat(3, min(28vw, 90px));
+  grid-template-rows: repeat(3, min(28vw, 90px));
   gap: 6px;
   margin-bottom: 30px;
 `;
 
 const DropZone = styled.div`
-  width: 90px;
-  height: 90px;
+  width: min(28vw, 90px);
+  height: min(28vw, 90px);
   background: rgba(255, 255, 255, 0.15);
   border-radius: 8px;
   border: 1px dashed rgba(255, 255, 255, 0.4);
@@ -232,8 +232,8 @@ const DropZone = styled.div`
 `;
 
 const Piece = styled.div`
-  width: 90px;
-  height: 90px;
+  width: min(28vw, 90px);
+  height: min(28vw, 90px);
   background-image: url(${game3});
   background-size: 300% 300%;
   border-radius: 8px;

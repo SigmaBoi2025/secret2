@@ -19,6 +19,7 @@ Chúc em tuổi mới thật hạnh phúc, thật xinh đẹp, và luôn luôn �
 `;
 
   const [text, setText] = useState("");
+  const [isFinished, setIsFinished] = useState(false);
   const navigate = useNavigate();
 
   // typing effect
@@ -27,7 +28,10 @@ Chúc em tuổi mới thật hạnh phúc, thật xinh đẹp, và luôn luôn �
     const interval = setInterval(() => {
       setText(fullText.slice(0, i));
       i++;
-      if (i > fullText.length) clearInterval(interval);
+      if (i > fullText.length) {
+        clearInterval(interval);
+        setIsFinished(true);
+      }
     }, 25);
 
     return () => clearInterval(interval);
@@ -41,15 +45,16 @@ Chúc em tuổi mới thật hạnh phúc, thật xinh đẹp, và luôn luôn �
     };
 
     const onTouchMove = (e) => {
+      if (!isFinished) return; // ⛔ CHƯA XONG CHỮ -> KHÔNG CHUYỂN
+
       const currentY = e.touches[0].clientY;
-      if (startY - currentY > 50) {
-        // Vuốt lên
-        navigate("/ticket");  // hoặc /ticket tùy trang
-      }
+      if (startY - currentY > 50) navigate("/ticket");
     };
 
     const onWheel = (e) => {
-      if (e.deltaY > 20) navigate("/ticket"); // PC
+      if (!isFinished) return; // ⛔ CHẶN CUỘN TRƯỚC KHI XONG
+
+      if (e.deltaY > 20) navigate("/ticket");
     };
 
     window.addEventListener("touchstart", onTouchStart);
@@ -61,7 +66,8 @@ Chúc em tuổi mới thật hạnh phúc, thật xinh đẹp, và luôn luôn �
       window.removeEventListener("touchmove", onTouchMove);
       window.removeEventListener("wheel", onWheel);
     };
-  }, []);
+  }, [isFinished]);
+
 
 
   return (
